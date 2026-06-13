@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Genetic Disorders | MCN Review | Adele Pillitteri</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <style>
+        .transition-all { transition: all 0.3s ease; }
+        .recall-mode .reveal-text {
+            background-color: #cbd5e1;
+            color: transparent;
+            border-radius: 0.375rem;
+            padding: 0 0.25rem;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+            box-shadow: inset 0 0 0 1px #94a3b8;
+        }
+        .recall-mode .reveal-text:hover,
+        .recall-mode .reveal-text.revealed {
+            background-color: #a78bfa;
+            color: #1e293b;
+            box-shadow: none;
+        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #6d28d9; border-radius: 8px; }
+        .content-section { animation: fade 0.3s ease; }
+        @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .quiz-feedback-correct { background-color: #dcfce7; border-left: 4px solid #22c55e; }
+        .quiz-feedback-wrong { background-color: #fee2e2; border-left: 4px solid #ef4444; }
+        .locked-section { opacity: 0.6; cursor: not-allowed; pointer-events: none; }
+        .pedigree-svg { background: #f8fafc; border-radius: 1rem; margin-bottom: 1rem; }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: { extend: { colors: { genetic: { light: '#ede9fe', DEFAULT: '#6d28d9', dark: '#4c1d95' } } } }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 h-screen flex flex-col md:flex-row font-sans text-slate-800 overflow-hidden">
+
+    <!-- Mobile Header -->
+    <div class="md:hidden bg-genetic-dark text-white p-4 flex justify-between items-center shadow-md z-30 shrink-0">
+        <button onclick="toggleMobileMenu()" class="text-white focus:outline-none z-40">
+            <i class="fa-solid fa-bars text-2xl"></i>
+        </button>
+        <h1 class="font-bold text-lg absolute left-1/2 transform -translate-x-1/2 pointer-events-none">
+            <i class="fa-solid fa-dna mr-2"></i> Genetic Disorders
+        </h1>
+        <div class="w-8"></div>
+    </div>
+
+    <!-- Sidebar Navigation -->
+    <nav id="sidebar" class="hidden md:flex flex-col w-full md:w-80 bg-white shadow-2xl h-full absolute md:relative z-30 transition-transform duration-300 shrink-0 border-r border-slate-200">
+        <div class="p-6 bg-gradient-to-br from-genetic-dark to-genetic text-white hidden md:block shrink-0">
+            <h1 class="font-black text-2xl tracking-wide"><i class="fa-solid fa-hand-holding-medical mr-2"></i> Genetic Disorders</h1>
+            <p class="text-sm text-violet-200 mt-1 font-medium">MCN · Pillitteri · Inheritance Patterns</p>
+        </div>
+        <div class="flex-1 overflow-y-auto py-4">
+            <ul class="space-y-1 text-sm font-medium">
+                <li><button onclick="showSection('home')" id="btn-home" class="nav-btn w-full text-left px-6 py-3 bg-genetic-light text-genetic-dark border-r-4 border-genetic-dark transition-colors"><i class="fa-solid fa-house w-6 nav-icon"></i><i class="fa-solid fa-lock w-6 hidden"></i> Home / Start</button></li>
+                <li><button onclick="showSection('basics')" id="btn-basics" class="nav-btn w-full text-left px-6 py-3 text-slate-700 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-book-open w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> Basics of Genetics</button></li>
+                <li><button onclick="showSection('patterns')" id="btn-patterns" class="nav-btn w-full text-left px-6 py-3 text-slate-700 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-chart-simple w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> Inheritance Patterns</button></li>
+                <li><button onclick="showSection('chromosomal')" id="btn-chromosomal" class="nav-btn w-full text-left px-6 py-3 text-slate-700 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-chromosome w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> Chromosomal Disorders</button></li>
+                <li><button onclick="showSection('single_gene')" id="btn-single_gene" class="nav-btn w-full text-left px-6 py-3 text-slate-700 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-gene w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> Single‑Gene Disorders</button></li>
+                <li><button onclick="showSection('testing')" id="btn-testing" class="nav-btn w-full text-left px-6 py-3 text-slate-700 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-microscope w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> Genetic Testing & Diagnostics</button></li>
+                <li><button onclick="showSection('counseling')" id="btn-counseling" class="nav-btn w-full text-left px-6 py-3 text-slate-700 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-hand-holding-heart w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> Genetic Counseling & Nursing Role</button></li>
+                <li><button onclick="showSection('mnemonics')" id="btn-mnemonics" class="nav-btn w-full text-left px-6 py-3 text-slate-700 hover:bg-slate-50 transition-colors border-t border-slate-200 mt-2 locked-section"><i class="fa-solid fa-brain w-6 text-genetic nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> Mnemonics & Summary Table</button></li>
+                <li><button onclick="showSection('final_quiz_sec')" id="btn-final_quiz_sec" class="nav-btn w-full text-left px-6 py-3 text-slate-700 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-graduation-cap w-6 text-amber-500 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> Final 50‑Item Exam</button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="flex-1 h-full overflow-y-auto bg-slate-100 relative w-full">
+        <div class="fixed top-16 md:top-4 right-4 md:right-8 z-40 flex items-center bg-white/90 backdrop-blur px-4 py-3 rounded-full shadow-lg border border-slate-200 cursor-pointer hover:bg-slate-50 transition-colors" onclick="toggleRecallMode()">
+            <span class="mr-3 text-sm font-bold text-slate-700 hidden md:inline"><i class="fa-solid fa-brain text-genetic mr-1"></i> Active Recall</span>
+            <button id="recall-toggle" class="w-12 h-6 bg-slate-300 rounded-full relative transition-colors duration-300 focus:outline-none shadow-inner pointer-events-none">
+                <div id="recall-knob" class="w-5 h-5 bg-white rounded-full absolute top-0.5 left-0.5 transition-transform duration-300 shadow"></div>
+            </button>
+        </div>
+
+        <div class="p-4 md:p-8 max-w-6xl mx-auto pb-32">
+            <!-- HOME SECTION -->
+            <section id="home" class="content-section flex flex-col items-center justify-center min-h-[80vh] text-center block">
+                <div class="bg-gradient-to-br from-slate-800 to-genetic-dark text-white rounded-3xl shadow-2xl p-10 md:p-16 w-full relative overflow-hidden">
+                    <div class="absolute top-0 right-0 -mt-10 -mr-10 text-white opacity-5 pointer-events-none"><i class="fa-solid fa-dna text-[20rem]"></i></div>
+                    <div class="relative z-10">
+                        <div class="bg-white/10 backdrop-blur-sm inline-block p-4 rounded-full text-violet-300 mb-6 shadow-sm border border-white/20">
+                            <i class="fa-solid fa-hand-holding-medical text-5xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-300 mb-2 uppercase tracking-widest">Maternal & Child Health Nursing</h3>
+                        <h1 class="text-4xl md:text-6xl font-black text-white mb-6 leading-tight drop-shadow-md">Genetic Disorders</h1>
+                        <div class="bg-white/10 backdrop-blur inline-block px-6 py-3 rounded-full mb-10 border border-white/20">
+                            <p class="text-lg text-white font-medium">Inheritance Patterns · Chromosomal & Single‑Gene Disorders | <strong>Adele Pillitteri, 7e</strong></p>
+                        </div>
+                        <button onclick="unlockFirstSection()" class="bg-slate-600 hover:bg-slate-500 text-white font-black py-4 px-10 rounded-full shadow-xl transition-transform hover:scale-105 text-lg flex items-center mx-auto focus:outline-none">
+                            Begin Module <i class="fa-solid fa-arrow-right ml-3"></i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 1. BASICS OF GENETICS -->
+            <section id="basics" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-4 border-b-2 border-genetic pb-3"><i class="fa-solid fa-book-open text-genetic mr-4"></i> Basics of Genetics</h2>
+                    <p><strong>Human genome</strong> – humans have <span class="reveal-text">46 chromosomes (23 pairs)</span>. 22 pairs of autosomes, 1 pair of sex chromosomes (XX female, XY male).</p>
+                    <div class="grid md:grid-cols-2 gap-5 mt-4">
+                        <div class="bg-slate-50 p-4 rounded-xl"><strong>🔬 Key Definitions</strong><br><span class="reveal-text">Gene – basic unit of heredity. Allele – variant form of a gene. Genotype – genetic makeup. Phenotype – observable characteristics.</span></div>
+                        <div class="bg-slate-50 p-4 rounded-xl"><strong>🧬 Chromosome abnormalities</strong><br><span class="reveal-text">Numerical (aneuploidy – extra/missing chromosome) or structural (deletions, duplications, translocations, inversions).</span></div>
+                    </div>
+                    <div class="bg-genetic-light p-3 rounded-lg mt-4"><i class="fa-regular fa-lightbulb"></i> <strong>Key concept:</strong> Genetics plays a role in nearly every disease. Nurses must understand inheritance patterns to provide risk assessment and counseling.</div>
+                    <button onclick="openQuiz('basics')" class="mt-6 w-full bg-slate-800 text-white font-black py-3 rounded-xl">Take Quiz → Unlock Next</button>
+                </div>
+            </section>
+
+            <!-- 2. INHERITANCE PATTERNS (with pedigree diagram) -->
+            <section id="patterns" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-4 border-b-2 border-genetic pb-3"><i class="fa-solid fa-chart-simple text-genetic mr-4"></i> Inheritance Patterns</h2>
+                    <div class="overflow-x-auto mb-4">
+                        <table class="w-full text-sm border-collapse border">
+                            <thead class="bg-genetic text-white"><tr><th class="p-2 border">Pattern</th><th class="p-2 border">Characteristics</th><th class="p-2 border">Examples</th></tr></thead>
+                            <tbody>
+                                <tr><td class="border p-2 font-bold">Autosomal Dominant</td><td class="reveal-text">Affected parent → 50% risk; appears in every generation; males/females equally affected</td><td class="reveal-text">Huntington disease, Marfan syndrome, Achondroplasia</td></tr>
+                                <tr class="bg-slate-50"><td class="border p-2 font-bold">Autosomal Recessive</td><td class="reveal-text">Both parents carriers → 25% affected; may skip generations; consanguinity increases risk</td><td class="reveal-text">Cystic fibrosis, PKU, Tay‑Sachs, Sickle cell anemia</td></tr>
+                                <tr><td class="border p-2 font-bold">X‑Linked Recessive</td><td class="reveal-text">Males affected; females carriers; no male‑to‑male transmission</td><td class="reveal-text">Hemophilia A, Duchenne muscular dystrophy</td></tr>
+                                <tr class="bg-slate-50"><td class="border p-2 font-bold">X‑Linked Dominant</td><td class="reveal-text">Affected males pass to all daughters (not sons); females affected less severely</td><td class="reveal-text">Fragile X syndrome (mostly X‑linked dominant with anticipation), Hypophosphatemic rickets</td></tr>
+                                <tr><td class="border p-2 font-bold">Mitochondrial</td><td class="reveal-text">Inherited from mother only; variable expression</td><td class="reveal-text">Leber hereditary optic neuropathy, MELAS</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- SVG Pedigree Diagram -->
+                    <div class="bg-slate-100 p-4 rounded-xl text-center">
+                        <p class="font-bold mb-2">📊 Pedigree Patterns (Visual)</p>
+                        <div class="flex flex-wrap justify-around gap-4 text-xs">
+                            <div><div class="w-8 h-8 rounded-full bg-blue-600 mx-auto"></div><div class="w-8 h-8 bg-white border-2 border-blue-600 rounded-full mx-auto mt-1"></div>Male, unaffected carrier</div>
+                            <div><div class="w-8 h-8 rounded-full bg-red-500 mx-auto"></div>Affected male</div>
+                            <div><div class="w-8 h-8 bg-white border-2 border-red-500 rounded-full mx-auto"></div>Affected female</div>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-2">Autosomal dominant: affected in every generation; autosomal recessive: often skips generations; X‑linked recessive: mainly males.</p>
+                    </div>
+                    <button onclick="openQuiz('patterns')" class="mt-6 w-full bg-slate-800 text-white font-black py-3 rounded-xl">Take Quiz → Unlock Next</button>
+                </div>
+            </section>
+
+            <!-- 3. CHROMOSOMAL DISORDERS -->
+            <section id="chromosomal" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-4 border-b-2 border-genetic pb-3"><i class="fa-solid fa-chromosome text-genetic mr-4"></i> Chromosomal Disorders</h2>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm border-collapse border">
+                            <thead class="bg-genetic text-white"><tr><th class="p-2 border">Disorder</th><th class="p-2 border">Karyotype</th><th class="p-2 border">Key Features</th></tr></thead>
+                            <tbody>
+                                <tr><td class="border p-2 font-bold">Down syndrome</td><td class="reveal-text">Trisomy 21 (95%)</td><td class="reveal-text">Hypotonia, epicanthal folds, simian crease, intellectual disability, heart defects</td></tr>
+                                <tr class="bg-slate-50"><td class="border p-2 font-bold">Edwards syndrome</td><td class="reveal-text">Trisomy 18</td><td class="reveal-text">Rocker‑bottom feet, low‑set ears, overlapping fingers, severe intellectual disability, early death</td></tr>
+                                <tr><td class="border p-2 font-bold">Patau syndrome</td><td class="reveal-text">Trisomy 13</td><td class="reveal-text">Cleft lip/palate, polydactyly, holoprosencephaly, severe disability</td></tr>
+                                <tr class="bg-slate-50"><td class="border p-2 font-bold">Turner syndrome</td><td class="reveal-text">45,XO</td><td class="reveal-text">Short stature, webbed neck, streak ovaries, coarctation of aorta, normal intelligence</td></tr>
+                                <tr><td class="border p-2 font-bold">Klinefelter syndrome</td><td class="reveal-text">47,XXY</td><td class="reveal-text">Tall stature, small testes, gynecomastia, infertility, mild learning difficulties</td></tr>
+                                <tr class="bg-slate-50"><td class="border p-2 font-bold">Cri‑du‑chat</td><td class="reveal-text">5p deletion</td><td class="reveal-text">Cat‑like cry, microcephaly, severe intellectual disability</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="bg-amber-50 p-3 rounded-lg mt-4"><strong>📌 Risk factors for aneuploidy:</strong> <span class="reveal-text">Advanced maternal age (>35 years), previous child with trisomy, family history.</span></div>
+                    <button onclick="openQuiz('chromosomal')" class="mt-6 w-full bg-slate-800 text-white font-black py-3 rounded-xl">Take Quiz → Unlock Next</button>
+                </div>
+            </section>
+
+            <!-- 4. SINGLE‑GENE DISORDERS -->
+            <section id="single_gene" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-4 border-b-2 border-genetic pb-3"><i class="fa-solid fa-gene text-genetic mr-4"></i> Single‑Gene Disorders</h2>
+                    <div class="grid md:grid-cols-2 gap-5">
+                        <div class="bg-indigo-50 p-4 rounded-xl"><strong>🧠 Huntington Disease</strong><br><span class="reveal-text">Autosomal dominant; CAG repeat expansion on chromosome 4; onset 30–50 years: chorea, dementia.</span></div>
+                        <div class="bg-indigo-50 p-4 rounded-xl"><strong>💪 Duchenne Muscular Dystrophy</strong><br><span class="reveal-text">X‑linked recessive; dystrophin gene deletion; progressive weakness, wheelchair by adolescence.</span></div>
+                        <div class="bg-indigo-50 p-4 rounded-xl"><strong>🩸 Hemophilia A</strong><br><span class="reveal-text">X‑linked recessive; factor VIII deficiency; bleeding episodes, hemarthrosis.</span></div>
+                        <div class="bg-indigo-50 p-4 rounded-xl"><strong>🌬️ Cystic Fibrosis</strong><br><span class="reveal-text">Autosomal recessive; CFTR gene mutation; thick mucus → lung disease, pancreatic insufficiency.</span></div>
+                        <div class="bg-indigo-50 p-4 rounded-xl"><strong>🍼 Phenylketonuria (PKU)</strong><br><span class="reveal-text">Autosomal recessive; PAH deficiency; intellectual disability if untreated; managed with dietary restriction.</span></div>
+                        <div class="bg-indigo-50 p-4 rounded-xl"><strong>🧬 Fragile X Syndrome</strong><br><span class="reveal-text">X‑linked dominant (CGG expansion >200); most common inherited intellectual disability; large ears, macroorchidism.</span></div>
+                    </div>
+                    <button onclick="openQuiz('single_gene')" class="mt-6 w-full bg-slate-800 text-white font-black py-3 rounded-xl">Take Quiz → Unlock Next</button>
+                </div>
+            </section>
+
+            <!-- 5. GENETIC TESTING & DIAGNOSTICS -->
+            <section id="testing" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-4 border-b-2 border-genetic pb-3"><i class="fa-solid fa-microscope text-genetic mr-4"></i> Genetic Testing & Diagnostics</h2>
+                    <ul class="list-disc pl-6 space-y-2">
+                        <li><strong>Karyotyping:</strong> <span class="reveal-text">Visualizes chromosomes; detects aneuploidy and large structural changes.</span></li>
+                        <li><strong>FISH (Fluorescence in situ hybridization):</strong> <span class="reveal-text">Rapid detection of specific chromosome abnormalities (e.g., trisomy 13, 18, 21).</span></li>
+                        <li><strong>Chromosomal Microarray (CMA):</strong> <span class="reveal-text">Higher resolution; detects microdeletions/duplications not visible on karyotype.</span></li>
+                        <li><strong>Prenatal diagnosis:</strong> <span class="reveal-text">Chorionic villus sampling (10–13 weeks), amniocentesis (15–20 weeks), NIPT (cell‑free fetal DNA).</span></li>
+                        <li><strong>Newborn screening:</strong> <span class="reveal-text">Bloodspot for PKU, congenital hypothyroidism, cystic fibrosis, sickle cell disease.</span></li>
+                    </ul>
+                    <div class="bg-blue-50 p-3 rounded-lg mt-4"><i class="fa-regular fa-flask"></i> <strong>Note:</strong> <span class="reveal-text">Informed consent and genetic counseling are essential before and after testing.</span></div>
+                    <button onclick="openQuiz('testing')" class="mt-6 w-full bg-slate-800 text-white font-black py-3 rounded-xl">Take Quiz → Unlock Next</button>
+                </div>
+            </section>
+
+            <!-- 6. GENETIC COUNSELING & NURSING ROLE -->
+            <section id="counseling" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-4 border-b-2 border-genetic pb-3"><i class="fa-solid fa-hand-holding-heart text-genetic mr-4"></i> Genetic Counseling & Nursing Role</h2>
+                    <ul class="list-disc pl-6 space-y-2">
+                        <li><strong>Purpose:</strong> <span class="reveal-text">Provide information, assess risk, support decision‑making, and facilitate adaptation.</span></li>
+                        <li><strong>Key principles:</strong> <span class="reveal-text">Non‑directiveness, informed consent, confidentiality, respect for autonomy.</span></li>
+                        <li><strong>Nursing role:</strong> <span class="reveal-text">Take family history (≥3 generations), identify red flags, coordinate testing, offer emotional support, refer to genetics professionals.</span></li>
+                        <li><strong>Indications for referral:</strong> <span class="reveal-text">Advanced maternal age, previous child with anomaly, multiple miscarriages, consanguinity, family history of genetic disorder.</span></li>
+                    </ul>
+                    <div class="bg-green-50 p-3 rounded-lg mt-4"><i class="fa-regular fa-heart"></i> <strong>Nursing mnemonic (G.E.N.E.):</strong> <span class="reveal-text">G – Gather family history, E – Educate about inheritance, N – Navigate testing options, E – Empower and support.</span></div>
+                    <button onclick="openQuiz('counseling')" class="mt-6 w-full bg-slate-800 text-white font-black py-3 rounded-xl">Take Quiz → Unlock Next</button>
+                </div>
+            </section>
+
+            <!-- 7. MNEMONICS & SUMMARY TABLE -->
+            <section id="mnemonics" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-4 border-b-2 border-genetic pb-3"><i class="fa-solid fa-brain text-genetic mr-4"></i> Mnemonics & Summary Table</h2>
+                    <div class="grid md:grid-cols-2 gap-5">
+                        <div class="bg-violet-50 p-4 rounded-xl"><strong>📌 Autosomal dominant “H.A.M.S.”</strong><br><span class="reveal-text">H – Huntington, A – Achondroplasia, M – Marfan, S – Spherocytosis.</span></div>
+                        <div class="bg-violet-50 p-4 rounded-xl"><strong>📌 Autosomal recessive “C.T.S.P.”</strong><br><span class="reveal-text">C – Cystic fibrosis, T – Tay‑Sachs, S – Sickle cell, P – PKU.</span></div>
+                        <div class="bg-violet-50 p-4 rounded-xl"><strong>📌 X‑linked recessive “H.D.F.”</strong><br><span class="reveal-text">Hemophilia, Duchenne MD, Fragile X (mostly X‑linked dominant).</span></div>
+                        <div class="bg-violet-50 p-4 rounded-xl"><strong>📌 Chromosome disorders mnemonics “T.E.P.T.”</strong><br><span class="reveal-text">Trisomy 13 (Patau), Trisomy 18 (Edwards), Trisomy 21 (Down), Turner (XO), Klinefelter (XXY).</span></div>
+                    </div>
+                    <div class="overflow-x-auto mt-4">
+                        <table class="w-full text-sm border-collapse border">
+                            <thead class="bg-genetic text-white"><tr><th class="p-2">Category</th><th class="p-2">Inheritance</th><th class="p-2">Examples</th></tr></thead>
+                            <tbody>
+                                <tr><td class="border p-2">Aneuploidy</td><td class="border reveal-text">Numerical</td><td class="border reveal-text">Down, Edwards, Patau, Turner, Klinefelter</td></tr>
+                                <tr class="bg-slate-50"><td class="border p-2">Deletion</td><td class="border reveal-text">Structural</td><td class="border reveal-text">Cri‑du‑chat (5p‑), DiGeorge (22q11)</td></tr>
+                                <tr><td class="border p-2">Single‑gene (AD)</td><td class="border reveal-text">Autosomal dominant</td><td class="border reveal-text">Huntington, Marfan, Neurofibromatosis</td></tr>
+                                <tr class="bg-slate-50"><td class="border p-2">Single‑gene (AR)</td><td class="border reveal-text">Autosomal recessive</td><td class="border reveal-text">CF, PKU, Tay‑Sachs, Sickle cell</td></tr>
+                                <tr><td class="border p-2">X‑linked</td><td class="border reveal-text">X‑linked recessive/dominant</td><td class="border reveal-text">Hemophilia, Duchenne, Fragile X</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <button onclick="openQuiz('mnemonics')" class="mt-6 w-full bg-slate-800 text-white font-black py-3 rounded-xl">Take Quiz → Unlock Final Exam</button>
+                </div>
+            </section>
+
+            <!-- FINAL EXAM SECTION -->
+            <section id="final_quiz_sec" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8 text-center min-h-[60vh] flex flex-col justify-center items-center">
+                    <i class="fa-solid fa-graduation-cap text-8xl text-amber-500 mb-6"></i>
+                    <h2 class="text-4xl font-black text-slate-800 mb-4">Final 50‑Item Exam: Genetic Disorders</h2>
+                    <p class="text-lg text-slate-600 mb-8 max-w-2xl">Covers inheritance patterns, chromosomal and single‑gene disorders, testing, counseling, and mnemonics. Score ≥75% to pass.</p>
+                    <button onclick="openQuiz('final_quiz')" class="w-full max-w-md bg-slate-800 text-white font-black py-4 rounded-xl shadow-md text-xl">Start Final Exam</button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- QUIZ MODAL -->
+    <div id="quiz-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-4">
+        <div class="bg-white w-full max-w-3xl rounded-2xl shadow-2xl p-6 md:p-8 relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeQuiz()" class="absolute top-4 right-4 text-slate-400 hover:text-red-500"><i class="fa-solid fa-xmark text-2xl"></i></button>
+            <h2 id="quiz-title" class="text-3xl font-black text-slate-800 mb-2"></h2>
+            <div id="quiz-questions-container" class="space-y-4 mt-4"></div>
+            <button id="quiz-submit-btn" onclick="submitQuiz()" class="mt-8 w-full bg-genetic text-white font-bold py-4 rounded-xl shadow-lg">Submit Answers</button>
+            <div id="quiz-result-container" class="hidden mt-6 p-4 rounded-xl bg-slate-100"></div>
+        </div>
+    </div>
+
+    <script>
+        let unlockedSections = ['home'];
+        // QUIZZES (10 questions each)
+        const quizzes = {
+            basics: { title: "Basics of Genetics", next: "patterns", questions: [
+                { q: "How many pairs of chromosomes do humans have?", options: ["22", "23", "24", "46"], ans: 1 },
+                { q: "A carrier of an autosomal recessive disorder has:", options: ["One mutated copy, one normal", "Two mutated copies", "No mutated copies", "One copy on the Y chromosome"], ans: 0 },
+                { q: "Which of the following is an example of a structural chromosome abnormality?", options: ["Trisomy 21", "Deletion (5p‑)", "Monosomy X", "Triploidy"], ans: 1 },
+                { q: "The genotype refers to:", options: ["Observable traits", "Genetic makeup", "Environmental influences", "Phenotype expression"], ans: 1 },
+                { q: "Karyotyping is used to detect:", options: ["Single‑gene mutations", "Chromosomal abnormalities", "Mitochondrial DNA", "Enzyme deficiencies"], ans: 1 },
+                { q: "Aneuploidy means:", options: ["Normal chromosome number", "Abnormal number of chromosomes", "Balanced translocation", "Point mutation"], ans: 1 },
+                { q: "Which sex chromosomes are present in a typical male?", options: ["XX", "XY", "XO", "XXY"], ans: 1 },
+                { q: "A person with Down syndrome has how many chromosomes?", options: ["46", "47", "45", "48"], ans: 1 },
+                { q: "The location of a gene on a chromosome is called:", options: ["Allele", "Locus", "Karyotype", "Genome"], ans: 1 },
+                { q: "Mitochondrial DNA is inherited from:", options: ["Father only", "Mother only", "Both parents equally", "Randomly"], ans: 1 }
+            ]},
+            patterns: { title: "Inheritance Patterns", next: "chromosomal", questions: [
+                { q: "Which pattern appears in every generation with affected males and females equally?", options: ["Autosomal recessive", "Autosomal dominant", "X‑linked recessive", "Mitochondrial"], ans: 1 },
+                { q: "Both parents are carriers of cystic fibrosis. The risk for an affected child is:", options: ["0%", "25%", "50%", "100%"], ans: 1 },
+                { q: "Hemophilia A is inherited as:", options: ["Autosomal dominant", "Autosomal recessive", "X‑linked recessive", "Mitochondrial"], ans: 2 },
+                { q: "An affected father with an X‑linked dominant disorder will pass the mutation to:", options: ["All sons", "All daughters", "50% of children", "None"], ans: 1 },
+                { q: "Consanguinity increases the risk for:", options: ["Autosomal dominant disorders", "Autosomal recessive disorders", "X‑linked disorders", "Chromosomal aneuploidy"], ans: 1 },
+                { q: "Huntington disease is caused by:", options: ["Trinucleotide repeat expansion", "Deletion", "Translocation", "Monosomy"], ans: 0 },
+                { q: "Marfan syndrome is inherited in a(n) _____ manner.", options: ["Autosomal recessive", "Autosomal dominant", "X‑linked recessive", "Mitochondrial"], ans: 1 },
+                { q: "Which pattern shows male‑to‑male transmission?", options: ["X‑linked recessive", "X‑linked dominant", "Autosomal dominant", "Mitochondrial"], ans: 2 },
+                { q: "A carrier mother (XᴺXʳ) has a son. The chance he is affected with an X‑linked recessive disorder is:", options: ["0%", "25%", "50%", "100%"], ans: 2 },
+                { q: "A child with an autosomal recessive disorder has parents who are:", options: ["Both affected", "Both carriers (heterozygous)", "One affected, one carrier", "One affected, one normal"], ans: 1 }
+            ]},
+            chromosomal: { title: "Chromosomal Disorders", next: "single_gene", questions: [
+                { q: "Turner syndrome karyotype is:", options: ["47,XXY", "45,XO", "47,XY+21", "46,XX"], ans: 1 },
+                { q: "Which syndrome is associated with a cat‑like cry?", options: ["Down", "Edwards", "Cri‑du‑chat", "Klinefelter"], ans: 2 },
+                { q: "Klinefelter syndrome is associated with:", options: ["Short stature", "Gynecomastia and small testes", "Webbed neck", "Rocker‑bottom feet"], ans: 1 },
+                { q: "Trisomy 18 is also known as:", options: ["Down syndrome", "Edwards syndrome", "Patau syndrome", "Turner syndrome"], ans: 1 },
+                { q: "A newborn with microcephaly, cleft lip/palate, and polydactyly most likely has:", options: ["Trisomy 13", "Trisomy 18", "Trisomy 21", "Turner"], ans: 0 },
+                { q: "What is the most common chromosomal abnormality?", options: ["Turner syndrome", "Klinefelter syndrome", "Down syndrome", "Edwards syndrome"], ans: 2 },
+                { q: "Which maternal age group has the highest risk for trisomy 21?", options: ["Under 25", "25-30", "30-35", ">35"], ans: 3 },
+                { q: "A patient with webbed neck, short stature, and streak ovaries has:", options: ["Turner syndrome", "Klinefelter", "Down syndrome", "Fragile X"], ans: 0 },
+                { q: "Rocker‑bottom feet and overlapping fingers are characteristic of:", options: ["Down syndrome", "Edwards syndrome", "Patau syndrome", "Cri‑du‑chat"], ans: 1 },
+                { q: "Cri‑du‑chat is caused by deletion of:", options: ["5p", "18p", "21q", "Xp"], ans: 0 }
+            ]},
+            single_gene: { title: "Single‑Gene Disorders", next: "testing", questions: [
+                { q: "Cystic fibrosis is caused by mutation in which gene?", options: ["CFTR", "FBN1", "HTT", "DMD"], ans: 0 },
+                { q: "Phenylketonuria (PKU) is caused by deficiency of:", options: ["Phenylalanine hydroxylase", "Glucose‑6‑phosphate", "CFTR", "Dystrophin"], ans: 0 },
+                { q: "Duchenne muscular dystrophy is inherited as:", options: ["Autosomal dominant", "Autosomal recessive", "X‑linked recessive", "Mitochondrial"], ans: 2 },
+                { q: "The genetic mutation in Huntington disease is located on:", options: ["Chromosome 4", "Chromosome 7", "X chromosome", "Mitochondria"], ans: 0 },
+                { q: "Which of the following is an X‑linked dominant disorder?", options: ["Hemophilia A", "Fragile X syndrome", "Cystic fibrosis", "Huntington disease"], ans: 1 },
+                { q: "Patients with PKU must restrict dietary:", options: ["Phenylalanine", "Tyrosine", "Glucose", "Lipids"], ans: 0 },
+                { q: "The most common inherited cause of intellectual disability in males is:", options: ["Down syndrome", "Fragile X syndrome", "PKU", "Klinefelter"], ans: 1 },
+                { q: "Marfan syndrome is caused by mutation in the gene encoding:", options: ["Fibrillin‑1", "Dystrophin", "CFTR", "Collagen"], ans: 0 },
+                { q: "Sickle cell anemia is inherited as:", options: ["Autosomal dominant", "Autosomal recessive", "X‑linked recessive", "Mitochondrial"], ans: 1 },
+                { q: "Hemophilia A is caused by deficiency of factor:", options: ["VIII", "IX", "XI", "X"], ans: 0 }
+            ]},
+            testing: { title: "Genetic Testing & Diagnostics", next: "counseling", questions: [
+                { q: "Chorionic villus sampling (CVS) is typically performed at:", options: ["6‑8 weeks", "10‑13 weeks", "15‑20 weeks", "24‑28 weeks"], ans: 1 },
+                { q: "Amniocentesis is performed at:", options: ["8‑10 weeks", "10‑13 weeks", "15‑20 weeks", "28‑32 weeks"], ans: 2 },
+                { q: "Newborn screening is primarily used to detect:", options: ["Chromosomal abnormalities", "Inborn errors of metabolism", "Structural heart defects", "Aneuploidy"], ans: 1 },
+                { q: "FISH is used to:", options: ["Detect specific chromosome regions rapidly", "Sequence entire genome", "Measure enzyme levels", "Evaluate fetal anatomy"], ans: 0 },
+                { q: "Which test offers the highest resolution for detecting microdeletions?", options: ["Karyotype", "FISH", "Chromosomal microarray", "NIPT"], ans: 2 },
+                { q: "Non‑invasive prenatal testing (NIPT) analyzes:", options: ["Amniotic fluid", "Cell‑free fetal DNA in maternal blood", "Chorionic villi", "Fetal cells in cervical mucus"], ans: 1 },
+                { q: "Which of the following is a screening test (not diagnostic) for neural tube defects?", options: ["Amniocentesis", "MSAFP", "CVS", "FISH"], ans: 1 },
+                { q: "Maternal serum AFP is elevated in:", options: ["Down syndrome", "Neural tube defects", "Trisomy 18", "Turner syndrome"], ans: 1 },
+                { q: "Informed consent for genetic testing must include:", options: ["Potential risks and benefits", "Explanation of possible results", "Voluntary nature", "All of the above"], ans: 3 },
+                { q: "The purpose of preimplantation genetic diagnosis (PGD) is to:", options: ["Screen embryos for genetic disorders before transfer", "Diagnose fetal anomalies in pregnancy", "Screen newborns", "Assess carrier status"], ans: 0 }
+            ]},
+            counseling: { title: "Genetic Counseling & Nursing Role", next: "mnemonics", questions: [
+                { q: "The nurse should take a family history covering at least how many generations?", options: ["1", "2", "3", "4"], ans: 2 },
+                { q: "Which of the following is an indication for genetic counseling?", options: ["Advanced maternal age (>35)", "Previous child with congenital anomaly", "Recurrent miscarriages", "All of the above"], ans: 3 },
+                { q: "A core principle of genetic counseling is:", options: ["Directiveness", "Non‑directiveness and patient autonomy", "Mandatory testing", "Paternalism"], ans: 1 },
+                { q: "A mother with a family history of Duchenne MD is considering pregnancy. The nurse should:", options: ["Advise against pregnancy", "Refer for genetic counseling and possible carrier testing", "Order karyotype immediately", "Ignore family history"], ans: 1 },
+                { q: "The mnemonic 'G.E.N.E.' for nursing role stands for:", options: ["Gather, Educate, Navigate, Empower", "Genetics, Ethics, Nursing, Education", "Guidance, Evaluation, Notification, Examination", "None"], ans: 0 },
+                { q: "Confidentiality in genetic testing is critical because:", options: ["Results can affect insurance and employment", "Only the patient should know", "It is not important", "Results are always benign"], ans: 0 },
+                { q: "A patient with a family history of hereditary breast/ovarian cancer (BRCA) should be:", options: ["Offered genetic counseling and testing discussion", "Immediately tested", "Reassured no risk", "Told to wait until symptoms appear"], ans: 0 },
+                { q: "Pre‑test counseling should include:", options: ["Possible results and implications", "Technical details only", "Only benefits", "Only risks"], ans: 0 },
+                { q: "After a positive genetic test, the nurse should:", options: ["Provide support, education, and referral", "Withhold results until patient asks", "Inform family members without consent", "Ignore emotional response"], ans: 0 },
+                { q: "Which of the following is NOT a red flag for genetic referral?", options: ["Congenital anomalies in a child", "Two or more miscarriages", "Singleton term pregnancy with no complications", "Parental consanguinity"], ans: 2 }
+            ]},
+            mnemonics: { title: "Mnemonics & Summary", next: "final_quiz_sec", questions: [
+                { q: "The mnemonic 'H.A.M.S.' helps recall which inheritance pattern?", options: ["Autosomal recessive", "Autosomal dominant", "X‑linked", "Mitochondrial"], ans: 1 },
+                { q: "In the mnemonic 'C.T.S.P.' for autosomal recessive disorders, 'S' stands for:", options: ["Sickle cell anemia", "Spina bifida", "Scleroderma", "Sarcoidosis"], ans: 0 },
+                { q: "The mnemonic for X‑linked recessive disorders is:", options: ["H.D.F.", "C.T.S.P.", "H.A.M.S.", "T.E.P.T."], ans: 0 },
+                { q: "Which mnemonic helps recall trisomies?", options: ["T.E.P.T.", "H.A.M.S.", "C.T.S.P.", "G.E.N.E."], ans: 0 },
+                { q: "T.E.P.T. includes all EXCEPT:", options: ["Trisomy 13", "Trisomy 18", "Trisomy 21", "Turner"], ans: 3 },
+                { q: "The mnemonic for nursing role in genetics is:", options: ["G.E.N.E.", "H.A.M.S.", "C.T.S.P.", "T.E.P.T."], ans: 0 },
+                { q: "Which disorder is NOT included in the 'H.A.M.S.' mnemonic?", options: ["Huntington", "Achondroplasia", "Marfan", "Turner"], ans: 3 },
+                { q: "In 'C.T.S.P.', 'P' stands for:", options: ["Phenylketonuria (PKU)", "Patau syndrome", "Polydactyly", "Pulmonary stenosis"], ans: 0 },
+                { q: "The mnemonic for X‑linked recessive disorders 'H.D.F.' includes:", options: ["Hemophilia, Duchenne, Fragile X", "Huntington, Down, Fetal alcohol", "Hemoglobinopathy, Diabetes, Fibrosis", "None"], ans: 0 },
+                { q: "Which mnemonic refers to chromosomal aneuploidies?", options: ["T.E.P.T.", "H.A.M.S.", "C.T.S.P.", "G.E.N.E."], ans: 0 }
+            ]}
+        };
+        // Build final 50-item exam
+        let finalQ = [];
+        for(let sec of ['basics','patterns','chromosomal','single_gene','testing','counseling','mnemonics']) {
+            finalQ.push(...quizzes[sec].questions.slice(0,7));
+        }
+        while(finalQ.length < 50) finalQ.push({ q: "The single most important risk factor for Down syndrome is:", options: ["Advanced paternal age", "Advanced maternal age (>35)", "Environmental toxins", "Maternal diabetes"], ans: 1 });
+        quizzes.final_quiz = { title: "Final 50‑Item Exam: Genetic Disorders", next: null, questions: finalQ };
+
+        let currentQuiz = null;
+
+        function unlockFirstSection() { if(!unlockedSections.includes('basics')) { unlockedSections.push('basics'); updateSidebarUI(); } showSection('basics'); }
+        function showSection(sectionId) {
+            if (!unlockedSections.includes(sectionId) && sectionId !== 'home') { alert("Complete the Active Recall Quiz at the bottom of the previous section to unlock."); return; }
+            document.querySelectorAll('.content-section').forEach(el => el.classList.add('hidden'));
+            document.getElementById(sectionId)?.classList.remove('hidden');
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('bg-genetic-light','text-genetic-dark','border-r-4','border-genetic-dark'));
+            const activeBtn = document.getElementById('btn-'+sectionId);
+            if(activeBtn) activeBtn.classList.add('bg-genetic-light','text-genetic-dark','border-r-4','border-genetic-dark');
+            if(window.innerWidth < 768) document.getElementById('sidebar').classList.add('hidden');
+        }
+        function updateSidebarUI() {
+            const sections = ['home','basics','patterns','chromosomal','single_gene','testing','counseling','mnemonics','final_quiz_sec'];
+            sections.forEach(sec => {
+                const btn = document.getElementById('btn-'+sec);
+                if(!btn) return;
+                const lock = btn.querySelector('.fa-lock'), icon = btn.querySelector('.nav-icon');
+                if(unlockedSections.includes(sec) || sec==='home') { btn.classList.remove('locked-section'); if(lock) lock.classList.add('hidden'); if(icon) icon.classList.remove('hidden'); }
+                else { btn.classList.add('locked-section'); if(lock) lock.classList.remove('hidden'); if(icon) icon.classList.add('hidden'); }
+            });
+        }
+        function openQuiz(sectionId) { currentQuiz = sectionId; const qd = quizzes[sectionId]; if(!qd) return; document.getElementById('quiz-title').innerHTML = qd.title; const container = document.getElementById('quiz-questions-container'); container.innerHTML = ''; qd.questions.forEach((q, idx) => { let html = `<div class="bg-slate-50 p-4 rounded-xl mb-4"><p class="font-bold mb-3">${idx+1}. ${q.q}</p><div class="space-y-2">`; q.options.forEach((opt,oi) => { html += `<label class="flex items-center space-x-3 p-2 rounded-lg hover:bg-white cursor-pointer"><input type="radio" name="q${idx}" value="${oi}" class="form-radio text-genetic"><span>${opt}</span></label>`; }); html += `</div><div class="feedback-${idx} text-sm mt-2 hidden"></div></div>`; container.innerHTML += html; }); document.getElementById('quiz-submit-btn').classList.remove('hidden'); document.getElementById('quiz-result-container').classList.add('hidden'); document.getElementById('quiz-modal').classList.remove('hidden'); }
+        function closeQuiz() { document.getElementById('quiz-modal').classList.add('hidden'); }
+        function submitQuiz() {
+            const qd = quizzes[currentQuiz];
+            if(!qd) return;
+            let score = 0;
+            for(let i=0; i<qd.questions.length; i++) {
+                const sel = document.querySelector(`input[name="q${i}"]:checked`);
+                if(sel && parseInt(sel.value)===qd.questions[i].ans) score++;
+                const fbDiv = document.querySelector(`.feedback-${i}`);
+                if(fbDiv){
+                    fbDiv.classList.remove('hidden');
+                    const correctTxt = qd.questions[i].options[qd.questions[i].ans];
+                    if(sel && parseInt(sel.value)===qd.questions[i].ans) { fbDiv.innerHTML='<span class="text-green-700">✓ Correct</span>'; fbDiv.parentElement?.classList.add('quiz-feedback-correct'); }
+                    else { const selectedTxt = sel? qd.questions[i].options[parseInt(sel.value)]:"No answer"; fbDiv.innerHTML=`<span class="text-red-700">✗ Incorrect. Correct: ${correctTxt}. You answered: ${selectedTxt}</span>`; fbDiv.parentElement?.classList.add('quiz-feedback-wrong'); }
+                }
+            }
+            let percent = (score/qd.questions.length)*100;
+            let resultDiv = document.getElementById('quiz-result-container');
+            document.getElementById('quiz-submit-btn').classList.add('hidden');
+            resultDiv.classList.remove('hidden');
+            if(percent>=75){
+                if(currentQuiz==='final_quiz'){ resultDiv.innerHTML=`<div class="text-green-600 text-4xl text-center">🎉 Excellent! Score ${score}/${qd.questions.length} (${percent}%)<br>You mastered Genetic Disorders</div><button onclick="closeQuiz()" class="mt-4 bg-genetic text-white px-6 py-2 rounded-xl">Close</button>`; return; }
+                if(quizzes[currentQuiz].next && !unlockedSections.includes(quizzes[currentQuiz].next)) unlockedSections.push(quizzes[currentQuiz].next);
+                if(quizzes[currentQuiz].next === 'mnemonics' && !unlockedSections.includes('final_quiz_sec')) unlockedSections.push('final_quiz_sec');
+                updateSidebarUI();
+                resultDiv.innerHTML=`<div class="text-green-600 text-3xl text-center">✅ Passed! (${score}/${qd.questions.length})</div><button onclick="closeQuiz(); showSection('${quizzes[currentQuiz].next}')" class="mt-4 bg-green-600 text-white px-6 py-2 rounded-xl">Unlock Next Section</button>`;
+            } else { resultDiv.innerHTML=`<div class="text-red-600 text-3xl text-center">❌ Failed: ${score}/${qd.questions.length} (${percent}%)<br>Need 75%</div><button onclick="openQuiz('${currentQuiz}')" class="mt-4 bg-slate-600 text-white px-6 py-2 rounded-xl">Try Again</button>`; }
+        }
+        function toggleRecallMode() { const active = !document.body.classList.contains('recall-mode'); const toggle=document.getElementById('recall-toggle'),knob=document.getElementById('recall-knob'); if(active){ document.body.classList.add('recall-mode'); toggle.classList.add('bg-genetic-dark'); knob.classList.add('translate-x-6'); } else { document.body.classList.remove('recall-mode'); toggle.classList.remove('bg-genetic-dark'); knob.classList.remove('translate-x-6'); } }
+        function toggleMobileMenu() { const s=document.getElementById('sidebar'); if(s.classList.contains('hidden')) s.classList.remove('hidden','flex','absolute','h-full','z-50'); else s.classList.add('hidden'); }
+        document.addEventListener('DOMContentLoaded', () => { updateSidebarUI(); document.querySelectorAll('.reveal-text').forEach(el => el.addEventListener('click', function(){ if(document.body.classList.contains('recall-mode')) this.classList.toggle('revealed'); })); });
+    </script>
+</body>
+</html>
